@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Smart To-Do List</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(to right, #6e8efb, #a777e3);
+      color: white;
+      padding: 25px 30px;
+      text-align: center;
+    }
+
+    .header-content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .header-content p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .main-content {
+      display: flex;
+      padding: 30px;
+      gap: 30px;
+    }
+
+    .todo-container {
+      flex: 2;
+    }
+
+    .ai-panel {
+      flex: 1;
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .input-section {
+      margin-bottom: 25px;
+    }
+
+    .input-group {
+      display: flex;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+
+    input[type="text"], input[type="date"] {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus {
+      outline: none;
+      border-color: #6e8efb;
+    }
+
+    .add-btn {
+      background: #6e8efb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      width: 50px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .add-btn:hover {
+      background: #5d7ce0;
+    }
+
+    .ai-suggestions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .ai-btn {
+      flex: 1;
+      padding: 12px;
+      background: #a777e3;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+
+    .ai-btn:hover {
+      background: #9666d3;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 10px 20px;
+      background: #f0f0f0;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: #6e8efb;
+      color: white;
+    }
+
+    .todo-list {
+      margin-bottom: 25px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s;
+    }
+
+    .todo-item:hover {
+      transform: translateY(-2px);
+    }
+
+    .todo-item.completed .todo-text {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .todo-checkbox {
+      margin-right: 15px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 1rem;
+    }
+
+    .todo-category {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-right: 10px;
+      background: #f0f0f0;
+    }
+
+    .todo-priority {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-right: 10px;
+    }
+
+    .priority-high {
+      background: #ff4757;
+      color: white;
+    }
+
+    .priority-medium {
+      background: #ffa502;
+      color: white;
+    }
+
+    .priority-low {
+      background: #2ed573;
+      color: white;
+    }
+
+    .todo-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .todo-actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #888;
+      transition: color 0.3s;
+    }
+
+    .todo-actions button:hover {
+      color: #333;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #6e8efb;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .ai-panel h3 {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #6e8efb;
+    }
+
+    .ai-features {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .ai-feature {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .ai-feature h4 {
+      margin-bottom: 10px;
+      color: #a777e3;
+    }
+
+    .ai-feature p {
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .feature-btn {
+      width: 100%;
+      padding: 12px;
+      background: #6e8efb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .feature-btn:hover {
+      background: #5d7ce0;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .modal h2 {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #6e8efb;
+    }
+
+    .suggestions-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* WhatsApp-style notifications */
+    .whatsapp-notification-center {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 350px;
+    }
+
+    .whatsapp-notification {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      position: relative;
+      overflow: hidden;
+      transform: translateX(-100%);
+      animation: whatsappSlideIn 0.3s forwards;
+      border-left: 4px solid #25D366;
+    }
+
+    .whatsapp-notification.success {
+      border-left-color: #25D366;
+    }
+
+    .whatsapp-notification.error {
+      border-left-color: #FF4757;
+    }
+
+    .whatsapp-notification.warning {
+      border-left-color: #FFA502;
+    }
+
+    .whatsapp-notification.info {
+      border-left-color: #2D87FF;
+    }
+
+    .whatsapp-notification-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .whatsapp-notification.success .whatsapp-notification-icon {
+      color: #25D366;
+    }
+
+    .whatsapp-notification.error .whatsapp-notification-icon {
+      color: #FF4757;
+    }
+
+    .whatsapp-notification.warning .whatsapp-notification-icon {
+      color: #FFA502;
+    }
+
+    .whatsapp-notification.info .whatsapp-notification-icon {
+      color: #2D87FF;
+    }
+
+    .whatsapp-notification-content {
+      flex: 1;
+    }
+
+    .whatsapp-notification-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .whatsapp-notification-message {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .whatsapp-notification-close {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #888;
+      flex-shrink: 0;
+    }
+
+    .whatsapp-notification-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    .whatsapp-notification-progress-bar {
+      height: 100%;
+      width: 100%;
+      animation: whatsappProgressBar 5s linear forwards;
+    }
+
+    .whatsapp-notification.success .whatsapp-notification-progress-bar {
+      background: #25D366;
+    }
+
+    .whatsapp-notification.error .whatsapp-notification-progress-bar {
+      background: #FF4757;
+    }
+
+    .whatsapp-notification.warning .whatsapp-notification-progress-bar {
+      background: #FFA502;
+    }
+
+    .whatsapp-notification.info .whatsapp-notification-progress-bar {
+      background: #2D87FF;
+    }
+
+    @keyframes whatsappSlideIn {
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes whatsappProgressBar {
+      from {
+        width: 100%;
+      }
+      to {
+        width: 0%;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-content h1 {
+        font-size: 2rem;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .filters {
+        overflow-x: auto;
+        padding-bottom: 10px;
+      }
+      
+      .stats {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .whatsapp-notification-center {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-content">
+        <h1><i class="fas fa-robot"></i> AI Smart To-Do</h1>
+        <p>Your intelligent task management companion</p>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="todo-container">
+        <div class="input-section">
+          <div class="input-group">
+            <input type="text" id="todoInput" placeholder="What do you need to do?">
+            <input type="date" id="todoDate" class="calendar-input">
+            <button id="addBtn" class="add-btn">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="ai-suggestions">
+            <button id="aiSuggestBtn" class="ai-btn">
+              <i class="fas fa-magic"></i> AI Suggestions
+            </button>
+            <button id="smartCategorizeBtn" class="ai-btn">
+              <i class="fas fa-tags"></i> Smart Categorize
+            </button>
+          </div>
+        </div>
+
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="work">Work</button>
+          <button class="filter-btn" data-filter="personal">Personal</button>
+          <button class="filter-btn" data-filter="shopping">Shopping</button>
+          <button class="filter-btn" data-filter="health">Health</button>
+        </div>
+
+        <div class="todo-list" id="todoList">
+          <!-- Todo items will be added here dynamically -->
+        </div>
+
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-number" id="totalTasks">0</span>
+            <span class="stat-label">Total Tasks</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="completedTasks">0</span>
+            <span class="stat-label">Completed</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="pendingTasks">0</span>
+            <span class="stat-label">Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-panel">
+        <h3><i class="fas fa-brain"></i> AI Assistant</h3>
+        <div class="ai-features">
+          <div class="ai-feature">
+            <h4>Smart Prioritization</h4>
+            <p>AI analyzes your tasks and suggests optimal order</p>
+            <button id="prioritizeBtn" class="feature-btn">Prioritize Tasks</button>
+          </div>
+          <div class="ai-feature">
+            <h4>Time Estimation</h4>
+            <p>Get intelligent time estimates for your tasks</p>
+            <button id="estimateBtn" class="feature-btn">Estimate Time</button>
+          </div>
+          <div class="ai-feature">
+            <h4>Productivity Insights</h4>
+            <p>Track your productivity patterns</p>
+            <button id="insightsBtn" class="feature-btn">View Insights</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- AI Suggestion Modal -->
+  <div id="aiModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2><i class="fas fa-lightbulb"></i> AI Suggestions</h2>
+      <div id="aiSuggestions" class="suggestions-list"></div>
+    </div>
+  </div>
+
+  <!-- WhatsApp-style notification container -->
+  <div class="whatsapp-notification-center" id="whatsappNotificationCenter"></div>
+
+  <script>
+    // AI Smart To-Do List Application
+    class AITodoApp {
+      constructor() {
+        this.todos = JSON.parse(localStorage.getItem('aiTodos')) || [];
+        this.currentFilter = 'all';
+        this.notificationCounter = 0;
+
+        // Ask permission for system notifications when user interacts
+        document.addEventListener("DOMContentLoaded", () => {
+          if ("Notification" in window) {
+            document.body.addEventListener("click", () => {
+              if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+              }
+            }, { once: true });
+          }
+        });
+
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.renderTodos();
+        this.updateStats();
+        this.loadSampleData();
+
+        // Check reminders every minute
+        setInterval(() => this.checkReminders(), 60000);
+      }
+
+      setupEventListeners() {
+        document.getElementById('addBtn').addEventListener('click', () => this.addTodo());
+        document.getElementById('todoInput').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.addTodo();
+        });
+
+        document.getElementById('aiSuggestBtn').addEventListener('click', () => this.showAISuggestions());
+        document.getElementById('smartCategorizeBtn').addEventListener('click', () => this.smartCategorize());
+        document.getElementById('prioritizeBtn').addEventListener('click', () => this.prioritizeTasks());
+        document.getElementById('estimateBtn').addEventListener('click', () => this.estimateTime());
+        document.getElementById('insightsBtn').addEventListener('click', () => this.showInsights());
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            this.currentFilter = e.target.dataset.filter;
+            this.updateFilterButtons();
+            this.renderTodos();
+          });
+        });
+
+        const modal = document.getElementById('aiModal');
+        const closeBtn = document.querySelector('.close');
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        window.addEventListener('click', (e) => {
+          if (e.target === modal) modal.style.display = 'none';
+        });
+      }
+
+      addTodo() {
+        const input = document.getElementById('todoInput');
+        const dateInput = document.getElementById('todoDate');
+        const text = input.value.trim();
+        const dueDate = dateInput.value;
+
+        if (text) {
+          const todo = {
+            id: Date.now(),
+            text,
+            completed: false,
+            category: this.detectCategory(text),
+            priority: this.calculatePriority(text),
+            createdAt: new Date().toISOString(),
+            estimatedTime: this.estimateTaskTime(text),
+            dueDate: dueDate || null
+          };
+
+          this.todos.unshift(todo);
+          this.saveTodos();
+          this.renderTodos();
+          this.updateStats();
+
+          input.value = '';
+          dateInput.value = '';
+
+          this.showWhatsAppNotification('Task Added', 'Task added successfully!', 'success');
+          this.showSystemNotification('Task Added', text);
+        }
+      }
+
+      // 🔹 Detect category based on keywords
+      detectCategory(text) {
+        const categories = {
+          work: ['meeting', 'report', 'email', 'project', 'deadline', 'presentation', 'client', 'office', 'notes'],
+          personal: ['family', 'friend', 'birthday', 'anniversary', 'hobby', 'exercise', 'read'],
+          shopping: ['buy', 'purchase', 'grocery', 'shopping', 'store', 'market', 'mall'],
+          health: ['doctor', 'appointment', 'exercise', 'gym', 'workout', 'medicine', 'health']
+        };
+
+        const lowerText = text.toLowerCase();
+        for (const [category, keywords] of Object.entries(categories)) {
+          if (keywords.some(keyword => lowerText.includes(keyword))) {
+            return category;
+          }
+        }
+        return 'personal';
+      }
+
+      // 🔹 Priority calculation
+      calculatePriority(text) {
+        const urgentWords = ['urgent', 'asap', 'emergency', 'deadline', 'important'];
+        const lowerText = text.toLowerCase();
+
+        if (urgentWords.some(word => lowerText.includes(word))) return 'high';
+        if (lowerText.includes('meeting') || lowerText.includes('appointment')) return 'medium';
+        return 'low';
+      }
+
+      estimateTaskTime(text) {
+        const timeEstimates = {
+          meeting: 60, email: 15, call: 30,
+          exercise: 45, shopping: 90, reading: 30,
+          cooking: 45, cleaning: 60
+        };
+
+        const lowerText = text.toLowerCase();
+        for (const [keyword, minutes] of Object.entries(timeEstimates)) {
+          if (lowerText.includes(keyword)) return minutes;
+        }
+        return 30;
+      }
+
+      toggleTodo(id) {
+        const todo = this.todos.find(todo => todo.id === id);
+        if (todo) {
+          todo.completed = !todo.completed;
+          this.saveTodos();
+          this.renderTodos();
+          this.updateStats();
+          
+          if (todo.completed) {
+            this.showWhatsAppNotification('Task Completed', 'Great job! Task marked as completed.', 'success');
+          }
+        }
+      }
+
+      deleteTodo(id) {
+        this.todos = this.todos.filter(todo => todo.id !== id);
+        this.saveTodos();
+        this.renderTodos();
+        this.updateStats();
+        this.showWhatsAppNotification('Task Deleted', 'Task has been removed from your list.', 'info');
+      }
+
+      editTodo(id, newText) {
+        const todo = this.todos.find(todo => todo.id === id);
+        if (todo && newText.trim() !== '') {
+          todo.text = newText.trim();
+          todo.category = this.detectCategory(todo.text);
+          todo.priority = this.calculatePriority(todo.text);
+          this.saveTodos();
+          this.renderTodos();
+          this.showWhatsAppNotification('Task Updated', 'Task updated successfully!', 'success');
+        }
+      }
+
+      renderTodos() {
+        const todoList = document.getElementById('todoList');
+        const filteredTodos = this.currentFilter === 'all' 
+          ? this.todos 
+          : this.todos.filter(todo => todo.category === this.currentFilter);
+
+        if (filteredTodos.length === 0) {
+          todoList.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: 15px; color: #ccc;"></i>
+              <p>No tasks found. Add a new task or change your filter.</p>
+            </div>
+          `;
+          return;
+        }
+
+        todoList.innerHTML = filteredTodos.map(todo => `
+          <div class="todo-item ${todo.completed ? 'completed' : ''}">
+            <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} 
+                   onchange="app.toggleTodo(${todo.id})">
+            <div class="todo-text">${todo.text}</div>
+            <span class="todo-category">${todo.category}</span>
+            <span class="todo-priority priority-${todo.priority}">${todo.priority}</span>
+            <div class="todo-actions">
+              <button onclick="app.startEditing(${todo.id})"><i class="fas fa-edit"></i></button>
+              <button onclick="app.deleteTodo(${todo.id})"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      startEditing(id) {
+        const todo = this.todos.find(todo => todo.id === id);
+        if (!todo) return;
+
+        const todoItem = document.querySelector(`.todo-item:has(button[onclick="app.startEditing(${id})"])`);
+        if (!todoItem) return;
+
+        todoItem.innerHTML = `
+          <input type="text" class="todo-edit-input" value="${todo.text}" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+          <button onclick="app.editTodo(${id}, this.previousElementSibling.value)" style="background: #4CAF50; color: white; border: none; padding: 10px; border-radius: 5px; margin: 0 5px;">
+            <i class="fas fa-check"></i>
+          </button>
+          <button onclick="app.renderTodos()" style="background: #f44336; color: white; border: none; padding: 10px; border-radius: 5px;">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        
+        const input = todoItem.querySelector('.todo-edit-input');
+        input.focus();
+        input.select();
+      }
+
+      updateFilterButtons() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.filter === this.currentFilter);
+        });
+      }
+
+      updateStats() {
+        document.getElementById('totalTasks').textContent = this.todos.length;
+        document.getElementById('completedTasks').textContent = this.todos.filter(todo => todo.completed).length;
+        document.getElementById('pendingTasks').textContent = this.todos.filter(todo => !todo.completed).length;
+      }
+
+      // 🔹 Heuristic (for GBFS)
+      heuristic(task) {
+        let score = task.priority === 'high' ? 1 : task.priority === 'medium' ? 5 : 10;
+        if (task.dueDate) {
+          const today = new Date();
+          const due = new Date(task.dueDate);
+          const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+          if (diffDays <= 0) score -= 2;
+          else if (diffDays <= 2) score -= 1;
+        }
+        return Math.max(score, 0);
+      }
+
+      greedyBestFirstSearch() {
+        let openList = [...this.todos];
+        let ordered = [];
+        while (openList.length > 0) {
+          openList.sort((a, b) => this.heuristic(a) - this.heuristic(b));
+          ordered.push(openList.shift());
+        }
+        return ordered;
+      }
+
+      prioritizeTasks() {
+        if (!this.todos.length) {
+          this.showWhatsAppNotification('Prioritization', 'No tasks to prioritize!', 'info');
+          return;
+        }
+        this.todos = this.greedyBestFirstSearch();
+        this.saveTodos();
+        this.renderTodos();
+        this.showWhatsAppNotification('Tasks Prioritized', 'Your tasks have been smartly prioritized!', 'success');
+        this.showSystemNotification('AI Smart To-Do', 'Tasks prioritized successfully!');
+      }
+
+      showAISuggestions() {
+        if (this.todos.length === 0) {
+          this.showWhatsAppNotification('AI Suggestions', 'Add some tasks first to get AI suggestions!', 'info');
+          return;
+        }
+
+        const suggestions = [
+          "Break down large tasks into smaller, manageable steps",
+          "Schedule tasks during your most productive hours",
+          "Set reminders for time-sensitive tasks",
+          "Group similar tasks together to improve efficiency",
+          "Take short breaks between tasks to maintain focus"
+        ];
+
+        const modal = document.getElementById('aiModal');
+        const suggestionsList = document.getElementById('aiSuggestions');
+        
+        suggestionsList.innerHTML = suggestions.map(suggestion => `
+          <div style="padding: 15px; border-bottom: 1px solid #eee;">
+            <i class="fas fa-lightbulb" style="color: #ffc107; margin-right: 10px;"></i>
+            ${suggestion}
+          </div>
+        `).join('');
+        
+        modal.style.display = 'flex';
+        this.showWhatsAppNotification('AI Suggestions', 'Smart suggestions generated for you!', 'info');
+      }
+
+      smartCategorize() {
+        this.todos.forEach(todo => {
+          todo.category = this.detectCategory(todo.text);
+        });
+        this.saveTodos();
+        this.renderTodos();
+        this.showWhatsAppNotification('Smart Categorization', 'Tasks have been automatically categorized!', 'success');
+      }
+
+      estimateTime() {
+        this.todos.forEach(todo => {
+          todo.estimatedTime = this.estimateTaskTime(todo.text);
+        });
+        this.saveTodos();
+        this.renderTodos();
+        this.showWhatsAppNotification('Time Estimates', 'Time estimates added to all tasks!', 'info');
+      }
+
+      showInsights() {
+        const completed = this.todos.filter(todo => todo.completed).length;
+        const total = this.todos.length;
+        const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+        
+        const highPriority = this.todos.filter(todo => todo.priority === 'high').length;
+        const mediumPriority = this.todos.filter(todo => todo.priority === 'medium').length;
+        const lowPriority = this.todos.filter(todo => todo.priority === 'low').length;
+        
+        this.showWhatsAppNotification(
+          'Productivity Insights', 
+          `Completion Rate: ${completionRate}% (${completed}/${total} tasks)\nHigh Priority Tasks: ${highPriority}`,
+          'info'
+        );
+      }
+
+      // 🔹 Check reminders
+      checkReminders() {
+        const today = new Date();
+        this.todos.forEach(todo => {
+          if (todo.dueDate && !todo.completed) {
+            const due = new Date(todo.dueDate);
+            const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 3) {
+              this.showWhatsAppNotification('Task Reminder', `"${todo.text}" is due in 3 days!`, 'warning');
+              this.showSystemNotification('Task Reminder', `${todo.text} is due in 3 days!`);
+            }
+            if (diffDays === 0) {
+              this.showWhatsAppNotification('Task Reminder', `"${todo.text}" is due today!`, 'error');
+              this.showSystemNotification('Task Reminder', `${todo.text} is due today!`);
+            }
+          }
+        });
+      }
+
+      // 🔹 Save
+      saveTodos() {
+        localStorage.setItem('aiTodos', JSON.stringify(this.todos));
+      }
+
+      // WhatsApp-style notification system
+      showWhatsAppNotification(title, message, type = 'info') {
+        this.notificationCounter++;
+        const notificationCenter = document.getElementById('whatsappNotificationCenter');
+        
+        const notification = document.createElement('div');
+        notification.className = `whatsapp-notification ${type}`;
+        notification.innerHTML = `
+          <div class="whatsapp-notification-icon">
+            ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+              type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
+              type === 'warning' ? '<i class="fas fa-exclamation-triangle"></i>' : 
+              '<i class="fas fa-info-circle"></i>'}
+          </div>
+          <div class="whatsapp-notification-content">
+            <div class="whatsapp-notification-title">${title}</div>
+            <div class="whatsapp-notification-message">${message}</div>
+          </div>
+          <button class="whatsapp-notification-close" onclick="this.parentElement.remove(); app.notificationCounter--;">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="whatsapp-notification-progress">
+            <div class="whatsapp-notification-progress-bar"></div>
+          </div>
+        `;
+        
+        notificationCenter.appendChild(notification);
+        
+        // Update document title with notification count (like WhatsApp Web)
+        if (type !== 'info') {
+          const originalTitle = document.title.replace(/^\(\d+\)\s/, '');
+          document.title = `(${this.notificationCounter}) ${originalTitle}`;
+        }
+        
+        
+      }
+
+      // 🔹 System notification
+      showSystemNotification(title, message) {
+        if (!("Notification" in window)) return;
+        if (Notification.permission === "granted") {
+          new Notification(title, {
+            body: message,
+            icon: "https://cdn-icons-png.flaticon.com/512/733/733585.png" // WhatsApp icon
+          });
+        }
+      }
+
+      checkReminders() {
+  const today = new Date();
+  this.todos.forEach(todo => {
+    if (todo.dueDate && !todo.completed) {
+      const due = new Date(todo.dueDate);
+      const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+
+      // Reminder 3 days before
+      if (diffDays === 3) {
+        this.showWhatsAppNotification(
+          'Task Reminder',
+          `"${todo.text}" is due in 3 days!`,
+          'warning'
+        );
+        this.showSystemNotification(
+          'Task Reminder',
+          `"${todo.text}" is due in 3 days!`
+        );
+      }
+
+      // Reminder today
+      if (diffDays === 0) {
+        this.showWhatsAppNotification(
+          'Task Due Today',
+          `"${todo.text}" is due today!`,
+          'error'
+        );
+        this.showSystemNotification(
+          'Task Due Today',
+          `"${todo.text}" is due today!`
+        );
+      }
+    }
+  });
+}
+
+      // 🔹 Sample data with relative dates
+      loadSampleData() {
+        if (this.todos.length === 0) {
+          const today = new Date();
+          const addDays = (d) => {
+            const date = new Date();
+            date.setDate(today.getDate() + d);
+            return date.toISOString().split("T")[0];
+          };
+          this.todos = [
+            { id: 1, text: 'Complete project presentation', completed: false, category: 'work', priority: 'high', createdAt: new Date().toISOString(), estimatedTime: 60, dueDate: addDays(2) },
+            { id: 2, text: 'Buy groceries for the week', completed: false, category: 'shopping', priority: 'medium', createdAt: new Date().toISOString(), estimatedTime: 90, dueDate: addDays(4) },
+            { id: 3, text: 'Schedule doctor appointment', completed: true, category: 'health', priority: 'medium', createdAt: new Date().toISOString(), estimatedTime: 15, dueDate: addDays(-1) }
+          ];
+          this.saveTodos();
+          this.renderTodos();
+          this.updateStats();
+        }
+      }
+    }
+
+    // Initialize the app
+    const app = new AITodoApp();
+
+    // Add CSS for notification animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      .empty-state { text-align:center; padding:40px; color:#6c757d; font-style:italic; }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
