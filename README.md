@@ -1,5 +1,4 @@
 # 🤖 AI Smart To-Do List Website
-
 A modern, intelligent to-do list web application with AI-powered features for enhanced productivity and task management.
 
 ## ✨ Features
