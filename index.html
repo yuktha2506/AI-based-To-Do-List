@@ -622,7 +622,6 @@
         this.currentFilter = 'all';
         this.notificationCounter = 0;
 
-        // Ask permission for system notifications when user interacts
         document.addEventListener("DOMContentLoaded", () => {
           if ("Notification" in window) {
             document.body.addEventListener("click", () => {
