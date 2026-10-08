@@ -4,7 +4,6 @@ class AITodoApp {
         this.todos = JSON.parse(localStorage.getItem('aiTodos')) || [];
         this.currentFilter = 'all';
 
-        // Ensure a single, one-time request for notification permission
         document.addEventListener("DOMContentLoaded", () => {
             this.requestNotificationPermission();
         });
